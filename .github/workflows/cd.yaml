@@ -3,30 +3,32 @@ name: testing
 on:
   push:
     branches: ["main"]
-    
-permissions:
-  contents: read
 
 jobs:
+  lint:
+    name: Check the source code
+    runs-on: ubuntu-lastest
+    steps:
+      - useas: actions/checkout@v3
+      - name: Install packages
+        run: npm i
+      - name: Lint
+        run: npm run lint
+
   test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Setup repo
+      - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Setup Deno
-        # uses: denoland/setup-deno@v1
-        uses: denoland/setup-deno@9db7f66e8e16b5699a514448ce994936c63f0d54
+      - name: Setup node
+        uses: actions/setup-node@v1
         with:
-          deno-version: v1.x
+          deno-version: "16.17"
 
-      # Uncomment this step to verify the use of 'deno fmt' on each commit.
-      # - name: Verify formatting
-      #   run: deno fmt --check
+      - name: Run Installing dependencies
+        run: deno i
 
-      - name: Run linter
-        run: deno lint
-
-      - name: Run tests
-        run: deno test -A
+      - name: testing our app
+        run: npm test
