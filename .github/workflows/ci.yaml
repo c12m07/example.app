@@ -1,34 +1,26 @@
-name: testing
+name: Continuous integration
 
 on:
   pull_request:
-    branches: ["main"]
+    branches:
+      - main
 
 jobs:
-  lint:
-    name: Check the source code
-    runs-on: ubuntu-lastest
+  linting:
+    name: Linting of the code
+    runs-on: ubuntu-latest
     steps:
-      - useas: actions/checkout@v3
+      - uses: actions/checkout@v2
       - name: Install packages
         run: npm i
-      - name: Lint
+      - name: Run linting 
         run: npm run lint
-
   test:
+    name: Testing of the code
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup node
-        uses: actions/setup-node@v1
-        with:
-          deno-version: "16.17"
-
-      - name: Run Installing dependencies
-        run: deno i
-
-      - name: testing our app
-        run: npm test
+      - uses: actions/checkout@v2
+      - name: Install packages
+        run: npm i
+      - name: Run tests 
+        run: npm run test

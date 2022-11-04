@@ -1,34 +1,35 @@
-name: testing
+name: vercel-deploy
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
 
 jobs:
-  lint:
-    name: Check the source code
-    runs-on: ubuntu-lastest
+  test:
+    name: Testing of the code
+    runs-on: ubuntu-latest
     steps:
-      - useas: actions/checkout@v3
+      - uses: actions/checkout@v2
       - name: Install packages
         run: npm i
-      - name: Lint
-        run: npm run lint
+      - name: Run tests 
+        run: npm run test
 
-  test:
+  vercel:
+    needs: [test]
+    name: "Deploy front-end" 
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup node
-        uses: actions/setup-node@v1
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
         with:
-          deno-version: "16.17"
+          node-version: '18.10'
+          registry-url: https://registry.npmjs.org/
 
-      - name: Run Installing dependencies
-        run: deno i
-
-      - name: testing our app
-        run: npm test
+      - name: "Deploy to Vercel"
+        run: npx vercel --token ${VERCEL_TOKEN} --prod
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
